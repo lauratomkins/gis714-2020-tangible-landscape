@@ -15,7 +15,7 @@
       "base": "elev_lid792_1m",
       "scanning_params": {"smooth": 10, "zexag": 2, "numscans": 1, "interpolate": true},
       "calibrate": true,
-      "analyses": "laura_edited.py",
+      "analyses": "laura_edited2.py",
       "title": "Slope, contours, and lake"
     }
   ]
