@@ -25,20 +25,6 @@ def run_slope(scanned_elev, env, **kwargs):
 def run_contours(scanned_elev, env, **kwargs):
     interval = 5
     gs.run_command('r.contour', input=scanned_elev, output='contours', step=interval, flags='t', env=env)
-	
-
-def run_ponds(scanned_elev, env, **kwargs):
-    repeat = 2
-    input_dem = scanned_elev
-    output = "tmp_filldir"
-    for i in range(repeat):
-        gs.run_command('r.fill.dir', input=input_dem, output=output, direction="tmp_dir", env=env)
-        input_dem = output
-    # filter depression deeper than 0.1 m to
-    gs.mapcalc('{new} = if({out} - {scan} > 0.1, {out} - {scan}, null())'.format(new='ponds', out=output,
-                                                                                 scan=scanned_elev), env=env)
-    gs.write_command('r.colors', map='ponds', rules='-', stdin='0% aqua\n100% blue', env=env)
-
 
 def run_function_with_points(scanned_elev, env, points=None, **kwargs):
     if not points:
@@ -53,6 +39,12 @@ def run_function_with_points(scanned_elev, env, points=None, **kwargs):
                            format='point', separator='comma', env=env).strip().splitlines()
     for point in data:
         point_list.append([float(p) for p in point.split(',')])
+
+
+
+def run_relief(scanned_elev, env, **kwargs ):
+
+    gs.run_command('r.relief', input = scanned_elev, output = 'hillshade' )
 
 
 # this part is for testing without TL
@@ -71,17 +63,8 @@ def main():
     # this will run all 3 examples (slope, contours, points)
     run_slope(scanned_elev=elev_resampled, env=None)
     run_contours(scanned_elev=elev_resampled, env=None)
-
-    run_ponds(scanned_elev=elev_resampled, env=None)
-
-
-    # create points
-    points = 'points'
-    gs.write_command('v.in.ascii', flags='t', input='-', output=points, separator='comma',
-                     stdin='638432,220382\n638621,220607')
-    run_function_with_points(scanned_elev=elev_resampled, env=None, points=points)
-
-
+    run_relief(scanned_elev=elev_resampled, env=None)
+ 
 if __name__ == '__main__':
     main()
 
